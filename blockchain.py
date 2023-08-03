@@ -11,6 +11,16 @@ def update_hash(*args):
 
     return h.hexdigest()
 
+def test():
+    database = ["hello", "hi", "how are you", "have a good day"]
+    blockChain = BlockChain()
+
+    for data in database:
+        blockChain.mine(BlockChain(data, len(blockChain.chain)))
+
+    for block in blockChain.chain:
+        print(block)
+
 class Block:
     index = 0
     data = None
@@ -41,16 +51,32 @@ class BlockChain:
         self.chain = chain
 
     def add(self,block):
-        self.chain.append({
-            'index':block.index,
-            'data':block.data,
-            'previous':block.previous_hash,
-            'nonce':block.nonce,
-            'hash':block.hash})
+        # self.chain.append({
+        #     'index':block.index,
+        #     'data':block.data,
+        #     'previous':block.previous_hash,
+        #     'nonce':block.nonce,
+        #     'hash':block.hash})
 
+        self.chain.append(block)
+
+    def remove(self,block):
+        self.chain.remove(block)
+
+    def isValid(self):
+        if len(self.chain) < 2:
+            return True
+
+        for i in range(1,len(self.chain)):
+            preHash = self.chain[i].previous_hash
+            preBlockHash = self.chain[i-1].hash
+            if preHash != preBlockHash:
+                return False
+
+        return True
     def mine(self,block):
         try:
-            block.previous_hash = self.chain[-1].get('hash')
+            block.previous_hash = self.chain[-1].hash
         except IndexError:
             pass
 
