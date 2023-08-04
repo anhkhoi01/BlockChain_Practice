@@ -16,30 +16,33 @@ def test():
     blockChain = BlockChain()
 
     for data in database:
-        blockChain.mine(BlockChain(data, len(blockChain.chain)))
+        blockChain.mine(Block(index=len(blockChain.chain),data=data))
 
     for block in blockChain.chain:
         print(block)
 
 class Block:
-    index = 0
+    number = 0
     data = None
     nonce = 0
     hash = None
     previous_hash = "0" * 64
 
-    def __init__(self,data,index=0):
+    def __init__(self,index=0,previous="0"*64, data=None, nonce=0, hashin="0"*64):
         self.data=data
-        self.index=index
+        self.number=index
+        self.previous_hash = previous
+        self.nonce = nonce
+        self.hash = hashin
 
     def __hash__(self):
-        result = update_hash(self.index,self.data,self.nonce,self.previous_hash)
+        result = update_hash(self.number,self.data,self.nonce,self.previous_hash)
         self.hash = result
         return result
 
     def __str__(self):
         return str("Block#: %s\nData: %s\nNonce: %s\nPrevious hash: %s\nHash: %s"
-                   %(self.index,self.data,self.nonce,self.previous_hash,self.hash))
+                   %(self.number,self.data,self.nonce,self.previous_hash,self.hash))
 
 class BlockChain:
     difficulty = 4

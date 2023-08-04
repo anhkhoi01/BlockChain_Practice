@@ -144,7 +144,7 @@ def get_blockchain():
     blockchain = BlockChain()
     blockchain_sql = Table("blockchain", "number", "hash", "previous", "data", "nonce")
     for b in blockchain_sql.getall():
-        blockchain.add(Block(int(b.get('number')), b.get('previous'), b.get('data'), int(b.get('nonce'))))
+        blockchain.add(Block(int(b.get('number')), b.get('previous'), b.get('data'), int(b.get('nonce')), b.get('hash')))
 
     return blockchain
 
@@ -154,4 +154,16 @@ def sync_blockchain(blockchain):
     blockchain_sql.deleteall()
 
     for block in blockchain.chain:
-        blockchain_sql.insert(str(block.number), block.hash(), block.previous_hash, block.data, block.nonce)
+        blockchain_sql.insert(int(block.number), block.hash, block.previous_hash, block.data, block.nonce)
+
+def test():
+    database = ["hello", "hi", "how are you", "have a good day"]
+    blockChain = BlockChain()
+
+    for data in database:
+        blockChain.mine(Block(index=len(blockChain.chain), data=data))
+
+    for block in blockChain.chain:
+        print(block)
+
+    sync_blockchain(blockChain)
