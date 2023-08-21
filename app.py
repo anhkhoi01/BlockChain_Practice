@@ -6,6 +6,8 @@ from functools import wraps
 from sqlhelpers import *
 from forms import *
 
+import time
+
 app = Flask(__name__)
 
 app.config['MYSQL_HOST'] = 'localhost'
@@ -77,7 +79,42 @@ def login():
             flash("Invalided password!", 'danger')
             return redirect(url_for('login'))
 
-    return render_template('login.html')
+    return render_template('login.html', page = 'login')
+
+@app.route("/transaction", methods = ['GET','POST'])
+@is_logged_in
+def transaction():
+    form = SendMoneyForm(request.form)
+    balance = get_balance(session.get('username'))
+
+    if request.method == 'POST':
+        try:
+            send_money(session.get('username'),form.username.data,form.amount.data)
+            flash("Money send!", 'success')
+        except Exception as e:
+            flash(str(e),'danger')
+
+        return redirect(url_for('transaction'))
+
+    return render_template("transaction.html", balance = balance, form = form, page = 'transaction')
+
+@app.route("/buy", methods = ['GET','POST'])
+@is_logged_in
+def buy():
+    form = BuyForm(request.form)
+    balance = get_balance(session.get('username'))
+
+    if request.method == 'POST':
+        try:
+            send_money("BANK",session.get('username'),form.amount.data)
+            flash("Purchase success!", 'success')
+        except Exception as e:
+            flash(str(e),'danger')
+
+        return redirect(url_for('dashboard'))
+
+    return render_template("buy.html", balance = balance, form = form, page = 'buy')
+
 
 @app.route("/logout")
 @is_logged_in
@@ -85,17 +122,24 @@ def logout():
     session.clear()
     flash("Logout success", 'success')
     return redirect(url_for('login'))
+
 @app.route("/dashboard")
 @is_logged_in
 def dashboard():
-    return render_template('dashboard.html', session=session)
+    blockChain = get_blockchain().chain
+    balance = get_balance(session.get('username'))
+    ct = time.strftime("%I %M %p")
+    return render_template('dashboard.html', session=session, ct = ct, blockchain = blockChain, page = 'dashboard', balance = balance)
+
 @app.route("/")
 def index():
     test()
+    send_money("KhoiN","KhoiK",10)
     # users = Table("users","name","email","username","password")
     # users.insert("John","john@gmail.com","johnJ","hash")
     return render_template('index.html')
 
 if __name__ == '__main__':
+# def run():
     app.secret_key = 'secret123'
     app.run(debug=True)

@@ -157,7 +157,7 @@ def sync_blockchain(blockchain):
         blockchain_sql.insert(int(block.number), block.hash, block.previous_hash, block.data, block.nonce)
 
 def test():
-    database = ["hello", "hi", "how are you", "have a good day"]
+    database = ["BANK-->KhoiN-->100", "KhoiN-->KhoiK-->50", "BANK-->johnJ-->100", "johnJ-->KhoiK-->25"]
     blockChain = BlockChain()
 
     for data in database:
