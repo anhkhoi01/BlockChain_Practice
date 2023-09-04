@@ -133,8 +133,6 @@ def dashboard():
 
 @app.route("/")
 def index():
-    test()
-    send_money("KhoiN","KhoiK",10)
     # users = Table("users","name","email","username","password")
     # users.insert("John","john@gmail.com","johnJ","hash")
     return render_template('index.html')
@@ -143,3 +141,5 @@ if __name__ == '__main__':
 # def run():
     app.secret_key = 'secret123'
     app.run(debug=True)
+    test()
+    send_money("KhoiN", "KhoiK", 10)
